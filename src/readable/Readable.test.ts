@@ -97,40 +97,56 @@ describe("map", () => {
   });
 });
 
-it("should apply", () => {
-  const result = r(true)``
-    .apply(r((b: boolean) => !b)`negation`)
-    .isEqualTo(r(false)``);
-  expect(result.print()).toBe("true mapped by negation is equal to false");
-  expect(result.eval()).toBe(true);
+describe("flatMap", () => {
+  it("should accept a function that returns a Readable", () => {
+    const result = r(true)``.flatMap(b => r(!b)`not`);
+    expect(result.print()).toBe("true mapped by not");
+    expect(result.eval()).toBe(false);
+  });
+  it("should apply the function to it", () => {
+    const not = b => r(!b)`not`;
+    const input = true;
+    const result = r(input)``.flatMap(not);
+    expect(result.print()).toBe("true mapped by not");
+    expect(result.eval()).toBe(false);
+  });
 });
 
-it("should apply and print function", () => {
-  const result = r(true)``.apply(r((b: boolean) => !b)``).isEqualTo(r(false)``);
-  expect(result.print()).toBe("true mapped by (b) => !b is equal to false");
-  expect(result.eval()).toBe(true);
+describe("apply", () => {
+  it("should apply function", () => {
+    const result = r(true)``
+      .apply(r((b: boolean) => !b)`negation`)
+      .isEqualTo(r(false)``);
+    expect(result.print()).toBe("true mapped by negation is equal to false");
+    expect(result.eval()).toBe(true);
+  });
+  it("should apply and print function", () => {
+    const result = r(true)``
+      .apply(r((b: boolean) => !b)``)
+      .isEqualTo(r(false)``);
+    expect(result.print()).toBe("true mapped by (b) => !b is equal to false");
+    expect(result.eval()).toBe(true);
+  });
 });
 
-it("should be false when isFalse", () => {
-  const result = r(true)``.isFalse();
-  expect(result.print()).toBe("true is not false");
-  expect(result.eval()).toBe(false);
+describe("mapr", () => {
+  it("should use the template litteral passed to mapr to describe the function", () => {
+    const result = r(true)`my input`.mapr(b => !b)`not`;
+    expect(result.print()).toBe("my input mapped by not");
+    expect(result.eval()).toBe(false);
+  });
 });
 
-it("should be true when isFalse", () => {
-  const result = r(false)``.isFalse();
-  expect(result.print()).toBe("false is false");
-  expect(result.eval()).toBe(true);
-});
-
-it("should access value with s", () => {
-  interface Person {
-    name: string;
-  }
-  const john: Person = {
-    name: "Doe"
-  };
-  const result = r(john)`John`.s("name");
-  expect(result.print()).toBe("John's name");
-  expect(result.eval()).toBe("Doe");
+describe("s", () => {
+  it("should access value via key with s", () => {
+    interface Person {
+      name: string;
+    }
+    const john: Person = {
+      name: "Doe"
+    };
+    const result = r(john)`John`.s("name");
+    expect(result.print()).toBe("John's name");
+    expect(result.eval()).toBe("Doe");
+  });
 });

@@ -59,6 +59,15 @@ class Readable<A> {
     return new Readable(result, `${this.itsName} mapped by ${them.itsName}`);
   }
 
+  /**
+   * same as map except you can pass template literals to mapr, to add a readable to your function
+   */
+  mapr<B>(fn: (a: A) => B) {
+    return (literals: TemplateStringsArray): Readable<B> => {
+      return this.flatMap(o => new Readable(fn(o), literals[0]));
+    };
+  }
+
   s(key: keyof A): Readable<A[keyof A]> {
     const value = this.it[key];
     return new Readable(value, `${this.itsName}'s ${key}`);
