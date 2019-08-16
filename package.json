@@ -1,6 +1,6 @@
 {
   "name": "readablejs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Make your code human readable",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
