@@ -41,11 +41,38 @@ class Readable<A> {
     );
   }
 
+  /**
+   * Applies the passed function to the Readable value and returns a Readable of the mapped value
+   * It will use the function's name or print it if it is an anonymous function
+   * ex:
+   * ```js
+   * const not = b => !b
+   * r(true)`My value`
+   *   .map(not)
+   * ```
+   *
+   * will print "My value mapped by not", and contain `false`.
+   * ex:
+   * ```js
+   * r(true)`My value`
+   *   .map(b => !b)
+   * ```
+   * will print "My value mapped by b => !b", and contain `false`.
+   */
   map<B>(fn: (it: A) => B): Readable<B> {
     const fnName = fn.name ? fn.name : fn;
     return new Readable(fn(this.it), `${this.itsName} mapped by ${fnName}`);
   }
 
+  /**
+   * Applies and flattens a function that returns a Readable
+   * ex:
+   * ```js
+   * r(true)`My value`
+   *   .flatMap(b => r(!b)`not`)
+   * ```
+   * will print "My value mapped by not", and contain `false`.
+   */
   flatMap<B>(fn: (it: A) => Readable<B>): Readable<B> {
     const result = fn(this.it);
     return new Readable(
@@ -54,13 +81,29 @@ class Readable<A> {
     );
   }
 
+  /**
+   * Applies a readable function
+   * ex:
+   * ```js
+   * r(true)`My value`
+   *   .apply(r(b => !b)`not`)
+   * ```
+   * will print "My value mapped by not", and contain `false`.
+   */
   apply<B>(them: Readable<(it: A) => B>): Readable<B> {
     const result = them.it(this.it);
     return new Readable(result, `${this.itsName} mapped by ${them.itsName}`);
   }
 
   /**
-   * same as map except you can pass template literals to mapr, to add a readable to your function
+   * Same as Readable#map except you can pass template literals to mapr, to add a readable name to your anonymous function.
+   * Enables easier to read indentations.
+   * ex:
+   * ```js
+   * r(true)          `My value`
+   *   .mapr(b => !b) `not`
+   * ```
+   * will print "My value mapped by not", and contain `false`.
    */
   mapr<B>(fn: (a: A) => B) {
     return (literals: TemplateStringsArray): Readable<B> => {
@@ -68,6 +111,15 @@ class Readable<A> {
     };
   }
 
+  /**
+   * Access a key of the Readable object
+   * ex:
+   * ```js
+   * r(john)`John`
+   *   .s("name")
+   * ```
+   * will print "John's name", and evaluates to `john.name`
+   */
   s(key: keyof A): Readable<A[keyof A]> {
     const value = this.it[key];
     return new Readable(value, `${this.itsName}'s ${key}`);

@@ -149,4 +149,18 @@ describe("s", () => {
     expect(result.print()).toBe("John's name");
     expect(result.eval()).toBe("Doe");
   });
+  it("should access deep value via key with s chains", () => {
+    interface Person {
+      name: { firstname: string; lastname: string };
+    }
+    const john = {
+      name: {
+        firstname: "John",
+        lastname: "Doe"
+      }
+    };
+    const result = r(john)`John`.s("name").s("lastname");
+    expect(result.print()).toBe("John's name's lastname");
+    expect(result.eval()).toBe("Doe");
+  });
 });
