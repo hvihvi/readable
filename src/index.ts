@@ -1,1 +1,3 @@
-export const Greeter = (name: string): string => `Hello ${name}`;
+import { r } from "./readable/Readable";
+
+export default r;
