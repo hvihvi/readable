@@ -27,6 +27,16 @@ class Readable<A> {
     );
   }
 
+  isEqualTor(them: A) {
+    return (literals: TemplateStringsArray): Readable<boolean> => {
+      const isEqual = this.it === them;
+      return new Readable(
+        isEqual,
+        `${this.itsName} is ${isEqual ? "" : "not "}equal to ${literals[0]}`
+      );
+    };
+  }
+
   and<B>(them: Readable<B>): Readable<boolean> {
     return new Readable(
       !!this.it && !!them.it,
@@ -123,6 +133,28 @@ class Readable<A> {
   s(key: keyof A): Readable<A[keyof A]> {
     const value = this.it[key];
     return new Readable(value, `${this.itsName}'s ${key}`);
+  }
+
+  /**
+   * Access a key of the Readable object
+   * ex:
+   * ```js
+   * r(john)       `John`
+   *   .sr("name") `NAME`
+   * ```
+   * will print "John's NAME", and evaluates to `john.name`
+   */
+  sr(key: keyof A) {
+    return (literals: TemplateStringsArray): Readable<A[keyof A]> => {
+      const value = this.it[key];
+      return new Readable(value, `${this.itsName}'s ${literals[0]}`);
+    };
+  }
+
+  appendr() {
+    return (literals: TemplateStringsArray): Readable<A> => {
+      return new Readable(this.it, `${this.itsName} ${literals[0]}`);
+    };
   }
 
   eval(): A {

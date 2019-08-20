@@ -39,6 +39,19 @@ describe("isEqualTo", () => {
   });
 });
 
+describe("isEqualTor", () => {
+  it("should be true when values are equal", () => {
+    const result = r(true)``.isEqualTor(true)`something else`;
+    expect(result.print()).toBe("true is equal to something else");
+    expect(result.eval()).toBe(true);
+  });
+  it("should be false when values are not equal", () => {
+    const result = r(true)``.isEqualTor(false)`something else`;
+    expect(result.print()).toBe("true is not equal to something else");
+    expect(result.eval()).toBe(false);
+  });
+});
+
 describe("and", () => {
   it("should be true when both are true", () => {
     const result = r(true)``.and(r(true)``);
@@ -162,5 +175,41 @@ describe("s", () => {
     const result = r(john)`John`.s("name").s("lastname");
     expect(result.print()).toBe("John's name's lastname");
     expect(result.eval()).toBe("Doe");
+  });
+});
+
+describe("sr", () => {
+  it("should access value via key with s", () => {
+    interface Person {
+      name: string;
+    }
+    const john: Person = {
+      name: "Doe"
+    };
+    const result = r(john)`John`.sr("name")`NAME`;
+    expect(result.print()).toBe("John's NAME");
+    expect(result.eval()).toBe("Doe");
+  });
+  it("should access deep value via key with s chains", () => {
+    interface Person {
+      name: { firstname: string; lastname: string };
+    }
+    const john = {
+      name: {
+        firstname: "John",
+        lastname: "Doe"
+      }
+    };
+    const result = r(john)`John`.sr("name")`NAME`.sr("lastname")`LAST NAME`;
+    expect(result.print()).toBe("John's NAME's LAST NAME");
+    expect(result.eval()).toBe("Doe");
+  });
+});
+
+describe("appendr", () => {
+  it("should append a string to the readable value and keep the value", () => {
+    const result = r(false)`my value`.appendr()`:D`;
+    expect(result.print()).toBe("my value :D");
+    expect(result.eval()).toBe(false);
   });
 });
