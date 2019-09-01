@@ -7,50 +7,6 @@ class Readable<A> {
     this.itsName = itsName;
   }
 
-  isTrue(): Readable<boolean> {
-    return this.it
-      ? new Readable(!!this.it, `${this.itsName} is true`)
-      : new Readable(!!this.it, `${this.itsName} is not true`);
-  }
-
-  isFalse(): Readable<boolean> {
-    return !this.it
-      ? new Readable(!this.it, `${this.itsName} is false`)
-      : new Readable(!this.it, `${this.itsName} is not false`);
-  }
-
-  isEqualTo(them: Readable<A>): Readable<boolean> {
-    const isEqual = this.it === them.it;
-    return new Readable(
-      isEqual,
-      `${this.itsName} is ${isEqual ? "" : "not "}equal to ${them.itsName}`
-    );
-  }
-
-  _isEqualTo(them: A) {
-    return (literals: TemplateStringsArray): Readable<boolean> => {
-      const isEqual = this.it === them;
-      return new Readable(
-        isEqual,
-        `${this.itsName} is ${isEqual ? "" : "not "}equal to ${literals[0]}`
-      );
-    };
-  }
-
-  and<B>(them: Readable<B>): Readable<boolean> {
-    return new Readable(
-      !!this.it && !!them.it,
-      `${this.itsName} and ${them.itsName}`
-    );
-  }
-
-  or<B>(them: Readable<B>): Readable<boolean> {
-    return new Readable(
-      !!this.it || !!them.it,
-      `${this.itsName} or ${them.itsName}`
-    );
-  }
-
   /**
    * Applies the passed function to the Readable value and returns a Readable of the mapped value
    * It will use the string litteral passed to it and concat it to the previous one
@@ -75,6 +31,7 @@ class Readable<A> {
       const nextReadable = literals[0].includes("{0}")
         ? literals[0].split("{0}").join(this.itsName)
         : `${this.itsName} ${literals[0]}`;
+
       return new Readable(result, nextReadable);
     };
   }
@@ -100,49 +57,21 @@ class Readable<A> {
    * Applies a readable function
    * ex:
    * ```js
-   * r(true)`My value`
-   *   .apply(r(b => !b)`not`)
+   * r(true)                   `my value`
+   *   .apply(r(b => !b)`not`) `{1} applied to {0}`
    * ```
-   * will print "My value mapped by not", and contain `false`.
+   * will print "not applied to my value", and contain `false`.
    */
-  apply<B>(them: Readable<(it: A) => B>): Readable<B> {
-    const result = them.it(this.it);
-    return new Readable(result, `${this.itsName} mapped by ${them.itsName}`);
-  }
-
-  /**
-   * Access a key of the Readable object
-   * ex:
-   * ```js
-   * r(john)`John`
-   *   .s("name")
-   * ```
-   * will print "John's name", and evaluates to `john.name`
-   */
-  s(key: keyof A): Readable<A[keyof A]> {
-    const value = this.it[key];
-    return new Readable(value, `${this.itsName}'s ${key}`);
-  }
-
-  /**
-   * Access a key of the Readable object
-   * ex:
-   * ```js
-   * r(john)       `John`
-   *   ._s("name") `NAME`
-   * ```
-   * will print "John's NAME", and evaluates to `john.name`
-   */
-  _s(key: keyof A) {
-    return (literals: TemplateStringsArray): Readable<A[keyof A]> => {
-      const value = this.it[key];
-      return new Readable(value, `${this.itsName}'s ${literals[0]}`);
-    };
-  }
-
-  _append() {
-    return (literals: TemplateStringsArray): Readable<A> => {
-      return new Readable(this.it, `${this.itsName} ${literals[0]}`);
+  apply<B>(fn: Readable<(it: A) => B>) {
+    return (literals: TemplateStringsArray): Readable<B> => {
+      const result = fn.it(this.it);
+      var nextReadable = literals[0].includes("{1}")
+        ? literals[0].split("{1}").join(fn.itsName)
+        : literals[0];
+      nextReadable = nextReadable.includes("{0}")
+        ? nextReadable.split("{0}").join(this.itsName)
+        : `${this.itsName} ${nextReadable}`;
+      return new Readable(result, nextReadable);
     };
   }
 
