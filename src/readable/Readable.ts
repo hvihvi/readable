@@ -27,7 +27,7 @@ class Readable<A> {
     );
   }
 
-  isEqualTor(them: A) {
+  _isEqualTo(them: A) {
     return (literals: TemplateStringsArray): Readable<boolean> => {
       const isEqual = this.it === them;
       return new Readable(
@@ -111,11 +111,11 @@ class Readable<A> {
    * ex:
    * ```js
    * r(true)          `My value`
-   *   .mapr(b => !b) `not`
+   *   ._map(b => !b) `not`
    * ```
    * will print "My value mapped by not", and contain `false`.
    */
-  mapr<B>(fn: (a: A) => B) {
+  _map<B>(fn: (a: A) => B) {
     return (literals: TemplateStringsArray): Readable<B> => {
       return this.flatMap(o => new Readable(fn(o), literals[0]));
     };
@@ -140,18 +140,18 @@ class Readable<A> {
    * ex:
    * ```js
    * r(john)       `John`
-   *   .sr("name") `NAME`
+   *   ._s("name") `NAME`
    * ```
    * will print "John's NAME", and evaluates to `john.name`
    */
-  sr(key: keyof A) {
+  _s(key: keyof A) {
     return (literals: TemplateStringsArray): Readable<A[keyof A]> => {
       const value = this.it[key];
       return new Readable(value, `${this.itsName}'s ${literals[0]}`);
     };
   }
 
-  appendr() {
+  _append() {
     return (literals: TemplateStringsArray): Readable<A> => {
       return new Readable(this.it, `${this.itsName} ${literals[0]}`);
     };

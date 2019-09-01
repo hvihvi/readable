@@ -39,14 +39,14 @@ describe("isEqualTo", () => {
   });
 });
 
-describe("isEqualTor", () => {
+describe("_isEqualTo", () => {
   it("should be true when values are equal", () => {
-    const result = r(true)``.isEqualTor(true)`something else`;
+    const result = r(true)``._isEqualTo(true)`something else`;
     expect(result.print()).toBe("true is equal to something else");
     expect(result.eval()).toBe(true);
   });
   it("should be false when values are not equal", () => {
-    const result = r(true)``.isEqualTor(false)`something else`;
+    const result = r(true)``._isEqualTo(false)`something else`;
     expect(result.print()).toBe("true is not equal to something else");
     expect(result.eval()).toBe(false);
   });
@@ -142,9 +142,9 @@ describe("apply", () => {
   });
 });
 
-describe("mapr", () => {
+describe("_map", () => {
   it("should use the template litteral passed to mapr to describe the function", () => {
-    const result = r(true)`my input`.mapr(b => !b)`not`;
+    const result = r(true)`my input`._map(b => !b)`not`;
     expect(result.print()).toBe("my input mapped by not");
     expect(result.eval()).toBe(false);
   });
@@ -178,7 +178,7 @@ describe("s", () => {
   });
 });
 
-describe("sr", () => {
+describe("_s", () => {
   it("should access value via key with s", () => {
     interface Person {
       name: string;
@@ -186,7 +186,7 @@ describe("sr", () => {
     const john: Person = {
       name: "Doe"
     };
-    const result = r(john)`John`.sr("name")`NAME`;
+    const result = r(john)`John`._s("name")`NAME`;
     expect(result.print()).toBe("John's NAME");
     expect(result.eval()).toBe("Doe");
   });
@@ -200,15 +200,15 @@ describe("sr", () => {
         lastname: "Doe"
       }
     };
-    const result = r(john)`John`.sr("name")`NAME`.sr("lastname")`LAST NAME`;
+    const result = r(john)`John`._s("name")`NAME`._s("lastname")`LAST NAME`;
     expect(result.print()).toBe("John's NAME's LAST NAME");
     expect(result.eval()).toBe("Doe");
   });
 });
 
-describe("appendr", () => {
+describe("_append", () => {
   it("should append a string to the readable value and keep the value", () => {
-    const result = r(false)`my value`.appendr()`:D`;
+    const result = r(false)`my value`._append()`:D`;
     expect(result.print()).toBe("my value :D");
     expect(result.eval()).toBe(false);
   });
