@@ -10,11 +10,11 @@ A monad wrapper to extract readable strings from your code's logic.
 const value = {firstname: "John", lastname: "Doe"};
 const jack = "Jack";
 
-r(value)                      `John Doe`
-  .map(it => it.lastname)     `'s last name`
-  .map(toUpperCase)           `to upper case`
-  .map(it => it === jack)     `Is {it} equal to ${jack}?`
-  .map(it=>it)                `:)`
+r(value)                     `John Doe`
+  .map(it => it.lastname)    `'s last name`
+  .map(toUpperCase)          `to upper case`
+  .map(it => it === jack)    `Is {it} equal to ${jack}?`
+  .map(it=>it)               `:)`
   .print();
   // returns "Is John Doe's last name to upper case equal to Jack? :)"
   // contains "false"
@@ -27,17 +27,27 @@ r(value)                      `John Doe`
 Give a readable value to functions with `apply` :
 
 ```js
-const value = {firstname: "John", lastname: "Doe"};
-const getLastName = r(it => it.firstname)`Retrieve firstname`
+const negation = r((b => !b)`negation`;
 
-r(value)                    `John Doe`
-  .apply(getLastName)       `{this} applied to {it}`
-  .print();
-  // returns "Retrieve firstname applied to John Doe"
-  // contains "John"
+r(true)               `true`
+  .apply(negation)    `{this} applied to {it}`
+  // returns "negation applied to true"
+  // contains "false"
 ```
 
 **Note:** "{this}" will be replaced by the readable function's readable value.
+
+
+### Read the value:
+
+```js
+const value = 4;
+const readableValue = r(value) `Four`
+
+readableValue.print() // returns "Four"
+readableValue.eval() // returns the number `4`
+
+```
 
 ### flatMap:
 
@@ -51,7 +61,7 @@ r(value)                      `John Doe`
 ```
 
 
-Installation :
+## Installation :
 
 `npm install readablejs`
 

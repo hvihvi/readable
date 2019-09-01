@@ -7,10 +7,10 @@ describe("map", () => {
     expect(result.print()).toBe("it mapped by not");
     expect(result.eval()).toBe(false);
   });
-  it("should position previous readable where {0} is", () => {
+  it("should position previous readable where {it} is", () => {
     const not = b => !b;
     const result = r(true)  `true boolean`
-      .map(not)             `when not {0} ...`;
+      .map(not)             `when not {it} ...`;
     expect(result.print()).toBe("when not true boolean ...");
     expect(result.eval()).toBe(false);
   });
@@ -52,22 +52,22 @@ describe("flatMap", () => {
     .flatMap(not)          `flatten to not`;
     expect(result.print()).toBe("true flatten to not");
   });
-  it("should concat the previous readable when {0} is passed", () => {
+  it("should concat the previous readable when {it} is passed", () => {
     const not = b => r(!b)`not`;
     const result = r(true) `true`
-    .flatMap(not)          `negation is applied to {0}`;
+    .flatMap(not)          `negation is applied to {it}`;
     expect(result.print()).toBe("negation is applied to true");
   });
-  it("should concat the previous readable when {1} is passed", () => {
+  it("should concat the previous readable when {this} is passed", () => {
     const not = b => r(!b)`not`;
     const result = r(true) `true`
-    .flatMap(not)          `flat mapped by {1}`;
+    .flatMap(not)          `flat mapped by {this}`;
     expect(result.print()).toBe("true flat mapped by not");
   });
-  it("should replace when {0} and {1} is passed", () => {
+  it("should replace when {it} and {this} is passed", () => {
     const not = b => r(!b)`not`;
     const result = r(true) `true`
-    .flatMap(not)          `{1} is applied to {0}`;
+    .flatMap(not)          `{this} is applied to {it}`;
     expect(result.print()).toBe("not is applied to true");
   });
 });
@@ -86,22 +86,22 @@ describe("apply", () => {
       .apply(negation)     `mapped by negation`;
     expect(result.print()).toBe("true mapped by negation");
   });
-  it("should concat the previous readable when {0} is passed", () => {
+  it("should concat the previous readable when {it} is passed", () => {
     const negation = r((b: boolean) => !b)`negation`;
     const result = r(true) `true`
-      .apply(negation)     `negation applied to {0}`;
+      .apply(negation)     `negation applied to {it}`;
     expect(result.print()).toBe("negation applied to true");
   });
-  it("should concat the previous readable when {1} is passed", () => {
+  it("should concat the previous readable when {this} is passed", () => {
     const negation = r((b: boolean) => !b)`negation`;
     const result = r(true) `true`
-      .apply(negation)     `when applying {1}`;
+      .apply(negation)     `when applying {this}`;
     expect(result.print()).toBe("true when applying negation");
   });
-  it("should concat the previous readable and the function readable when {0} and {1} is passed", () => {
+  it("should concat the previous readable and the function readable when {it} and {this} is passed", () => {
     const negation = r((b: boolean) => !b)`negation`;
     const result = r(true) `true`
-      .apply(negation)     `{1} applied to {0}`;
+      .apply(negation)     `{this} applied to {it}`;
     expect(result.print()).toBe("negation applied to true");
   });
 });

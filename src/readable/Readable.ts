@@ -36,11 +36,11 @@ class Readable<A> {
    * ```
    * will print "My value mapped by not", and contain `false`.
    *
-   * It is possible to place the initial readable somewhere esle with the string {0}
+   * It is possible to place the initial readable somewhere esle with the string {it}
    *  ex:
    * ```js
    * r(true)         `my value`
-   *   .map(b => !b) `When not {0},`
+   *   .map(b => !b) `When not {it},`
    * ```
    * will print "When not my value", and contain `false`.
    */
@@ -53,8 +53,8 @@ class Readable<A> {
       const passedReadable = concatTemplateLiterals(literals, ...placeholders);
 
       const result = fn(this.it);
-      const nextReadable = passedReadable.includes("{0}")
-        ? passedReadable.split("{0}").join(this.itsName)
+      const nextReadable = passedReadable.includes("{it}")
+        ? passedReadable.split("{it}").join(this.itsName)
         : `${this.itsName} ${passedReadable}`;
 
       return new Readable(result, nextReadable);
@@ -67,18 +67,18 @@ class Readable<A> {
    * ```js
    * const negation = b => r(!b)`not himself`
    * r(true)         `my value`
-   *   .flatMap(not) `This is {0} flat mapped to {1}`
+   *   .flatMap(not) `This is {it} flat mapped to {this}`
    * ```
    * will print "This is my value flat mapped to not himself", and contain `false`.
    */
   flatMap<B>(fn: (it: A) => Readable<B>) {
     return (literals: TemplateStringsArray): Readable<B> => {
       const result = fn(this.it);
-      var nextReadable = literals[0].includes("{1}")
-        ? literals[0].split("{1}").join(result.itsName)
+      var nextReadable = literals[0].includes("{this}")
+        ? literals[0].split("{this}").join(result.itsName)
         : literals[0];
-      nextReadable = nextReadable.includes("{0}")
-        ? nextReadable.split("{0}").join(this.itsName)
+      nextReadable = nextReadable.includes("{it}")
+        ? nextReadable.split("{it}").join(this.itsName)
         : `${this.itsName} ${nextReadable}`;
       return new Readable(result.it, nextReadable);
     };
@@ -91,18 +91,18 @@ class Readable<A> {
    * const negation = r(b => !b)`negation`
    *
    * r(true)            `my value`
-   *   .apply(negation) `{1} applied to {0}`
+   *   .apply(negation) `{this} applied to {it}`
    * ```
    * will print "negation applied to my value", and contain `false`.
    */
   apply<B>(fn: Readable<(it: A) => B>) {
     return (literals: TemplateStringsArray): Readable<B> => {
       const result = fn.it(this.it);
-      var nextReadable = literals[0].includes("{1}")
-        ? literals[0].split("{1}").join(fn.itsName)
+      var nextReadable = literals[0].includes("{this}")
+        ? literals[0].split("{this}").join(fn.itsName)
         : literals[0];
-      nextReadable = nextReadable.includes("{0}")
-        ? nextReadable.split("{0}").join(this.itsName)
+      nextReadable = nextReadable.includes("{it}")
+        ? nextReadable.split("{it}").join(this.itsName)
         : `${this.itsName} ${nextReadable}`;
       return new Readable(result, nextReadable);
     };
