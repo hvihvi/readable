@@ -2,30 +2,54 @@
 
 A monad wrapper to extract readable strings from your code's logic.
 
-Examples:
+## Examples:
 
-```js
-const value = {innerValue: true};
-const not = b => !b;
+### map:
 
-r(value)`My value`
-  .s("innerValue")
-  .map(not)
-  .isFalse()
-  .print(); // returns "My value's innerValue mapped by not is false"
-```
-
-You can also use the "_" version to indent the readable part nicely:
 ```js
 const value = {firstname: "John", lastname: "Doe"};
+const jack = "Jack";
 
-r(value)               `John Doe`
-  ._s("lastname")       `last name`
-  ._map(toUpperCase)    `to upper case`
-  ._isEqualTo("sdfsd")  `random keyboad inputs`
-  ._append()           `:)`
-  .print(); // returns "John Doe's last name mapped by to upper case is not equal to random keyboard inputs :)"
+r(value)                      `John Doe`
+  .map(it => it.lastname)     `'s last name`
+  .map(toUpperCase)           `to upper case`
+  .map(it => it === jack)     `Is {it} equal to ${jack}?`
+  .map(it=>it)                `:)`
+  .print();
+  // returns "Is John Doe's last name to upper case equal to Jack? :)"
+  // contains "false"
 ```
+
+**Note:** "{it}" will be replaced by the previous readable value, you can construct sentences around it. Otherwise, they are appended with a space.
+
+### apply:
+
+Give a readable value to functions with `apply` :
+
+```js
+const value = {firstname: "John", lastname: "Doe"};
+const getLastName = r(it => it.firstname)`Retrieve firstname`
+
+r(value)                    `John Doe`
+  .apply(getLastName)       `{this} applied to {it}`
+  .print();
+  // returns "Retrieve firstname applied to John Doe"
+  // contains "John"
+```
+
+**Note:** "{this}" will be replaced by the readable function's readable value.
+
+### flatMap:
+
+```js
+const value = {firstname: "John", lastname: "Doe"};
+const getLastName = value => r(value.firstname)`firstname`
+
+r(value)                      `John Doe`
+  .flatMap(getLastName)       `{it}'s {this}`
+  .print(); // returns "John Doe's firstname"
+```
+
 
 Installation :
 

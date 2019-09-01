@@ -29,6 +29,14 @@ describe("map", () => {
     expect(result2.eval()).toBe("2!!!");
     expect(result2.eval()).toBe(result1.eval());
   });
+  it("should accept multiple params in string litterals", () => {
+    const anArray = [1, 2, 3];
+    const filter1 = input => input.filter(it => it !== 1);
+    const result = r(anArray)  `An array containing ${anArray} values`
+      .map(filter1)            `when filtering 1 ...`;
+    expect(result.print()).toBe("An array containing 1,2,3 values when filtering 1 ...");
+    expect(result.eval()).toEqual([2, 3]);
+  });
 });
 
 describe("flatMap", () => {

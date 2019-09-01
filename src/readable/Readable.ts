@@ -1,3 +1,22 @@
+/**
+ * concatenates template literals passed as function params
+ * example usage:
+ * ```js
+ * const fn = (literals, ...placeholders) => concatTemplateLiterals(literals, ...placeholders)
+ * fn`a${1}b${2}c` // returns "a1b2c"
+ *
+ */
+const concatTemplateLiterals = (
+  literals: TemplateStringsArray,
+  ...placeholders: string[]
+) => {
+  var result = literals[0];
+  for (var i = 0; i < placeholders.length; ++i) {
+    result += placeholders[i] + literals[i + 1];
+  }
+  return result;
+};
+
 class Readable<A> {
   it: A;
   itsName: string;
@@ -26,11 +45,17 @@ class Readable<A> {
    * will print "When not my value", and contain `false`.
    */
   map<B>(fn: (a: A) => B) {
-    return (literals: TemplateStringsArray): Readable<B> => {
+    return (
+      literals: TemplateStringsArray,
+      ...placeholders: string[]
+    ): Readable<B> => {
+      console.log(...placeholders);
+      const passedReadable = concatTemplateLiterals(literals, ...placeholders);
+
       const result = fn(this.it);
-      const nextReadable = literals[0].includes("{0}")
-        ? literals[0].split("{0}").join(this.itsName)
-        : `${this.itsName} ${literals[0]}`;
+      const nextReadable = passedReadable.includes("{0}")
+        ? passedReadable.split("{0}").join(this.itsName)
+        : `${this.itsName} ${passedReadable}`;
 
       return new Readable(result, nextReadable);
     };
@@ -92,5 +117,12 @@ class Readable<A> {
   }
 }
 
-export const r = <A>(it: A) => (literals: TemplateStringsArray): Readable<A> =>
-  literals[0] ? new Readable<A>(it, literals[0]) : new Readable(it, String(it));
+export const r = <A>(it: A) => (
+  literals: TemplateStringsArray,
+  ...placeholders: string[]
+): Readable<A> => {
+  const readable = concatTemplateLiterals(literals, ...placeholders);
+  return readable
+    ? new Readable<A>(it, readable)
+    : new Readable(it, String(it));
+};
