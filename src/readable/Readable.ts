@@ -40,27 +40,35 @@ class Readable<A> {
    * Applies and flattens a function that returns a Readable
    * ex:
    * ```js
-   * r(true)`My value`
-   *   .flatMap(b => r(!b)`not`)
+   * const negation = b => r(!b)`not himself`
+   * r(true)         `my value`
+   *   .flatMap(not) `This is {0} flat mapped to {1}`
    * ```
-   * will print "My value mapped by not", and contain `false`.
+   * will print "This is my value flat mapped to not himself", and contain `false`.
    */
-  flatMap<B>(fn: (it: A) => Readable<B>): Readable<B> {
-    const result = fn(this.it);
-    return new Readable(
-      result.it,
-      `${this.itsName} mapped by ${result.itsName}`
-    );
+  flatMap<B>(fn: (it: A) => Readable<B>) {
+    return (literals: TemplateStringsArray): Readable<B> => {
+      const result = fn(this.it);
+      var nextReadable = literals[0].includes("{1}")
+        ? literals[0].split("{1}").join(result.itsName)
+        : literals[0];
+      nextReadable = nextReadable.includes("{0}")
+        ? nextReadable.split("{0}").join(this.itsName)
+        : `${this.itsName} ${nextReadable}`;
+      return new Readable(result.it, nextReadable);
+    };
   }
 
   /**
    * Applies a readable function
    * ex:
    * ```js
-   * r(true)                   `my value`
-   *   .apply(r(b => !b)`not`) `{1} applied to {0}`
+   * const negation = r(b => !b)`negation`
+   *
+   * r(true)            `my value`
+   *   .apply(negation) `{1} applied to {0}`
    * ```
-   * will print "not applied to my value", and contain `false`.
+   * will print "negation applied to my value", and contain `false`.
    */
   apply<B>(fn: Readable<(it: A) => B>) {
     return (literals: TemplateStringsArray): Readable<B> => {
