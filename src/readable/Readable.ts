@@ -53,25 +53,30 @@ class Readable<A> {
 
   /**
    * Applies the passed function to the Readable value and returns a Readable of the mapped value
-   * It will use the function's name or print it if it is an anonymous function
+   * It will use the string litteral passed to it and concat it to the previous one
    * ex:
    * ```js
-   * const not = b => !b
-   * r(true)`My value`
-   *   .map(not)
+   * r(true)         `My value`
+   *   .map(b => !b) `mapped by not`
    * ```
-   *
    * will print "My value mapped by not", and contain `false`.
-   * ex:
+   *
+   * It is possible to place the initial readable somewhere esle with the string {0}
+   *  ex:
    * ```js
-   * r(true)`My value`
-   *   .map(b => !b)
+   * r(true)         `my value`
+   *   .map(b => !b) `When not {0},`
    * ```
-   * will print "My value mapped by b => !b", and contain `false`.
+   * will print "When not my value", and contain `false`.
    */
-  map<B>(fn: (it: A) => B): Readable<B> {
-    const fnName = fn.name ? fn.name : fn;
-    return new Readable(fn(this.it), `${this.itsName} mapped by ${fnName}`);
+  map<B>(fn: (a: A) => B) {
+    return (literals: TemplateStringsArray): Readable<B> => {
+      const result = fn(this.it);
+      const nextReadable = literals[0].includes("{0}")
+        ? literals[0].split("{0}").join(this.itsName)
+        : `${this.itsName} ${literals[0]}`;
+      return new Readable(result, nextReadable);
+    };
   }
 
   /**
@@ -103,22 +108,6 @@ class Readable<A> {
   apply<B>(them: Readable<(it: A) => B>): Readable<B> {
     const result = them.it(this.it);
     return new Readable(result, `${this.itsName} mapped by ${them.itsName}`);
-  }
-
-  /**
-   * Same as Readable#map except you can pass template literals to mapr, to add a readable name to your anonymous function.
-   * Enables easier to read indentations.
-   * ex:
-   * ```js
-   * r(true)          `My value`
-   *   ._map(b => !b) `not`
-   * ```
-   * will print "My value mapped by not", and contain `false`.
-   */
-  _map<B>(fn: (a: A) => B) {
-    return (literals: TemplateStringsArray): Readable<B> => {
-      return this.flatMap(o => new Readable(fn(o), literals[0]));
-    };
   }
 
   /**

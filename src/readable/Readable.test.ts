@@ -79,32 +79,31 @@ describe("or", () => {
 });
 
 describe("map", () => {
-  it("should print the function when not a const", () => {
-    const result = r(true)``.map(b => !b);
-    expect(result.print()).toBe("true mapped by b => !b");
+  it("should concat readable values and apply function", () => {
+    const result = r(true)  `it`
+      .map(b => !b)         `mapped by not`;
+    expect(result.print()).toBe("it mapped by not");
     expect(result.eval()).toBe(false);
   });
-  it("should print the function name when named", () => {
+  it("should position previous readable where {0} is", () => {
     const not = b => !b;
-    const result = r(true)``.map(not);
-    expect(result.print()).toBe("true mapped by not");
+    const result = r(true)  `true boolean`
+      .map(not)             `when not {0} ...`;
+    expect(result.print()).toBe("when not true boolean ...");
     expect(result.eval()).toBe(false);
-  });
-  it("should apply the function to it", () => {
-    const not = b => !b;
-    const input = true;
-    const result = r(input)``.map(not);
-    expect(result.print()).toBe("true mapped by not");
-    expect(result.eval()).toBe(not(true));
   });
   it("should be distributive", () => {
     const add1 = b => b + 1;
     const toStringExcl = b => String(b) + "!!!";
-    const result1 = r(1)``.map(add1).map(toStringExcl);
-    const result2 = r(1)``.map(it => toStringExcl(add1(it)));
+    const bothFunctions = it => toStringExcl(add1(it));
+    const result1 = r(1)  `1`
+      .map(add1)          `mapped by add1`
+      .map(toStringExcl)   `mapped by toStringExcl`;
+    const result2 = r(1)  `1`
+      .map(bothFunctions) `mapped by both functions`;
     expect(result1.print()).toBe("1 mapped by add1 mapped by toStringExcl");
     expect(result1.eval()).toBe("2!!!");
-    expect(result2.print()).toBe("1 mapped by it => toStringExcl(add1(it))");
+    expect(result2.print()).toBe("1 mapped by both functions");
     expect(result2.eval()).toBe("2!!!");
     expect(result2.eval()).toBe(result1.eval());
   });
