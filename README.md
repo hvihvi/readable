@@ -17,7 +17,7 @@ r(value)                     `John Doe`
   .map(toUpperCase)          `to upper case`
   .map(it => it === jack)    `Is {it} equal to ${jack}?`
   .map(it=>it)               `:)`
-  .print();
+  .read();
   // returns "Is John Doe's last name to upper case equal to Jack? :)"
   // contains "false"
 ```
@@ -46,8 +46,8 @@ r(true)               `true`
 const value = 4;
 const readableValue = r(value) `Four`
 
-readableValue.print() // returns "Four"
-readableValue.eval() // returns the number `4`
+readableValue.read() // returns "Four"
+readableValue.get() // returns the number `4`
 
 ```
 
@@ -59,27 +59,7 @@ const getLastName = value => r(value.firstname)`firstname`
 
 r(value)                      `John Doe`
   .flatMap(getLastName)       `{it}'s {this}`
-  .print(); // returns "John Doe's firstname"
-```
-
-## Use Cases :
-
-WIP TODO compose
-```js 
-// given
-const greaterThan = min => r(it => it > min) `greater than ${min}`
-const getAge = r(it => it.age) `{it}'s age`
-const minAge = 18
-const joe = {name: "Joe", age: 17}
-
-// when
-const ageRule = user => user    `User`
-  .map()            `'s age`
-  .apply(greaterThan(minAge))   `{it} should be {this}`
-
-// then
-ageRule(joe).eval()  // false
-ageRule(joe).print() // "User's age should be greater than 18
+  .read(); // returns "John Doe's firstname"
 ```
 
 ## Installation :

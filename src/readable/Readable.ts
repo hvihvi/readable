@@ -19,11 +19,11 @@ const concatTemplateLiterals = (
 
 class Readable<A> {
   it: A;
-  itsName: string;
+  readable: string;
 
   constructor(it: A, itsName: string) {
     this.it = it;
-    this.itsName = itsName;
+    this.readable = itsName;
   }
 
   /**
@@ -54,8 +54,8 @@ class Readable<A> {
 
       const result = fn(this.it);
       const nextReadable = passedReadable.includes("{it}")
-        ? passedReadable.split("{it}").join(this.itsName)
-        : `${this.itsName} ${passedReadable}`;
+        ? passedReadable.split("{it}").join(this.readable)
+        : `${this.readable} ${passedReadable}`;
 
       return new Readable(result, nextReadable);
     };
@@ -75,11 +75,11 @@ class Readable<A> {
     return (literals: TemplateStringsArray): Readable<B> => {
       const result = fn(this.it);
       var nextReadable = literals[0].includes("{this}")
-        ? literals[0].split("{this}").join(result.itsName)
+        ? literals[0].split("{this}").join(result.readable)
         : literals[0];
       nextReadable = nextReadable.includes("{it}")
-        ? nextReadable.split("{it}").join(this.itsName)
-        : `${this.itsName} ${nextReadable}`;
+        ? nextReadable.split("{it}").join(this.readable)
+        : `${this.readable} ${nextReadable}`;
       return new Readable(result.it, nextReadable);
     };
   }
@@ -99,21 +99,21 @@ class Readable<A> {
     return (literals: TemplateStringsArray): Readable<B> => {
       const result = fn.it(this.it);
       var nextReadable = literals[0].includes("{this}")
-        ? literals[0].split("{this}").join(fn.itsName)
+        ? literals[0].split("{this}").join(fn.readable)
         : literals[0];
       nextReadable = nextReadable.includes("{it}")
-        ? nextReadable.split("{it}").join(this.itsName)
-        : `${this.itsName} ${nextReadable}`;
+        ? nextReadable.split("{it}").join(this.readable)
+        : `${this.readable} ${nextReadable}`;
       return new Readable(result, nextReadable);
     };
   }
 
-  eval(): A {
+  get(): A {
     return this.it;
   }
 
-  print(): string {
-    return this.itsName;
+  read(): string {
+    return this.readable;
   }
 }
 
