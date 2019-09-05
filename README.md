@@ -1,8 +1,10 @@
 # readablejs
 
-A monad wrapper to extract readable strings from your code's logic.
+A monad based on template literals to express your code's logic in human readable sentences.
 
-## Examples:
+Display error messages to users, share bussiness logic with non-tech people, compose and reuse sentences.
+
+## API:
 
 ### map:
 
@@ -60,6 +62,25 @@ r(value)                      `John Doe`
   .print(); // returns "John Doe's firstname"
 ```
 
+## Use Cases :
+
+WIP TODO compose
+```js 
+// given
+const greaterThan = min => r(it => it > min) `greater than ${min}`
+const getAge = r(it => it.age) `{it}'s age`
+const minAge = 18
+const joe = {name: "Joe", age: 17}
+
+// when
+const ageRule = user => user    `User`
+  .map()            `'s age`
+  .apply(greaterThan(minAge))   `{it} should be {this}`
+
+// then
+ageRule(joe).eval()  // false
+ageRule(joe).print() // "User's age should be greater than 18
+```
 
 ## Installation :
 
